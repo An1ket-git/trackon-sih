@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrackOn - AI-Powered Bus Tracking for Tier 2/3 Cities | SIH 2025</title>
-    <meta name="description" content="AI-powered real-time bus tracking system for small cities. SIH 2025 Project - PS ID: 25013">
+    <title>TrackOn - AI-Powered Bus Tracking</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <style>
@@ -32,6 +31,7 @@
             background-color: var(--light);
             color: var(--dark);
             line-height: 1.6;
+            overflow-x: hidden;
         }
         
         .container {
@@ -59,7 +59,6 @@
             font-size: 2rem;
             font-weight: 700;
             margin-bottom: 2rem;
-            text-align: center;
         }
         
         h3 {
@@ -74,7 +73,7 @@
         
         .btn {
             display: inline-block;
-            padding: 12px 24px;
+            padding: 10px 20px;
             background: var(--primary);
             color: white;
             border: none;
@@ -97,6 +96,11 @@
         
         .btn-secondary:hover {
             background: #0da271;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.9rem;
         }
         
         /* Header Styles */
@@ -128,15 +132,6 @@
             margin-right: 10px;
         }
         
-        .sih-badge {
-            background: #ff9933;
-            color: white;
-            padding: 3px 10px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            margin-left: 10px;
-        }
-        
         .nav-links {
             display: flex;
             list-style: none;
@@ -157,80 +152,195 @@
             color: var(--primary);
         }
         
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 100px 0;
-            text-align: center;
-        }
-        
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-        
-        .hero .tagline {
+        .mobile-menu {
+            display: none;
             font-size: 1.5rem;
-            margin-bottom: 2rem;
-            color: #e2e8f0;
+            cursor: pointer;
         }
         
-        .ps-id {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 5px 15px;
-            border-radius: 20px;
-            display: inline-block;
-            margin-bottom: 2rem;
-        }
-        
-        /* Dashboard Section */
+        /* Main Dashboard */
         .dashboard {
-            background: white;
-            padding: 60px 0;
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 80px);
+            padding: 20px 0;
         }
         
         .search-section {
-            background: #f8fafc;
-            padding: 30px;
+            background: white;
+            padding: 20px;
             border-radius: 10px;
-            margin-bottom: 30px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
         }
         
         .search-box {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            margin-bottom: 15px;
         }
         
-        .search-box input {
+        .search-box input, .search-box select {
             flex: 1;
-            min-width: 200px;
-            padding: 12px 15px;
+            padding: 10px 15px;
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 1rem;
         }
         
+        .route-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .route-option {
+            background: #f1f5f9;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .route-option.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .main-content {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+        }
+        
         .map-container {
+            flex: 2;
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
         }
         
         #map {
-            height: 400px;
+            height: 500px;
             width: 100%;
+        }
+        
+        .map-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .info-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .bus-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .bus-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .bus-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .bus-icon {
+            width: 30px;
+            height: 30px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .crowd-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .crowd-low {
+            background: var(--crowd-low);
+        }
+        
+        .crowd-medium {
+            background: var(--crowd-medium);
+        }
+        
+        .crowd-high {
+            background: var(--crowd-high);
+        }
+        
+        .eta {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .notification-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .notification-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .notification-icon {
+            width: 30px;
+            height: 30px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        /* Features Section */
+        .features {
+            background: white;
         }
         
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 30px;
-            margin-top: 50px;
         }
         
         .feature-card {
@@ -242,7 +352,7 @@
         }
         
         .feature-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-10px);
         }
         
         .feature-icon {
@@ -263,53 +373,227 @@
             background: var(--dark);
             color: white;
             padding: 40px 0 20px;
-            text-align: center;
         }
         
         .footer-content {
             display: flex;
             flex-wrap: wrap;
-            justify-content: space-around;
+            justify-content: space-between;
             margin-bottom: 30px;
         }
         
         .footer-column {
             flex: 1;
-            min-width: 250px;
+            min-width: 200px;
             margin-bottom: 20px;
         }
         
         .footer-column h3 {
             margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-column h3:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--primary);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
         }
         
         .copyright {
-            border-top: 1px solid #334155;
+            text-align: center;
             padding-top: 20px;
+            border-top: 1px solid #334155;
             color: #94a3b8;
-        }
-        
-        .sih-footer {
-            background: #ff9933;
-            color: white;
-            padding: 10px;
-            margin-top: 20px;
-            border-radius: 5px;
         }
         
         /* Responsive Design */
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
-            
-            .search-box {
+            .main-content {
                 flex-direction: column;
             }
             
             .nav-links {
                 display: none;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                padding: 20px;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
             }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .nav-links li {
+                margin: 10px 0;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+        }
+        
+        /* Route Selection Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
+        .route-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        
+        .route-item {
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .route-item:hover {
+            border-color: var(--primary);
+            background: #f8fafc;
+        }
+        
+        .route-item.active {
+            border-color: var(--primary);
+            background: #f0f7ff;
+        }
+        
+        .route-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .route-number {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .route-time {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        /* SMS Notification Toggle */
+        .sms-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--secondary);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
         }
     </style>
 </head>
@@ -320,83 +604,130 @@
             <nav>
                 <div class="logo">
                     <i class="fas fa-bus"></i>
-                    TrackOn <span class="sih-badge">SIH 2025</span>
+                    <span>TrackOn</span>
                 </div>
                 <ul class="nav-links">
-                    <li><a href="#tracking">Live Tracking</a></li>
+                    <li><a href="#dashboard">Live Tracking</a></li>
                     <li><a href="#features">Features</a></li>
                     <li><a href="#about">About</a></li>
                     <li><a href="#contact">Contact</a></li>
+                    <li><a href="#" class="btn btn-small">Get App</a></li>
                 </ul>
+                <div class="mobile-menu">
+                    <i class="fas fa-bars"></i>
+                </div>
             </nav>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
+    <!-- Main Dashboard -->
+    <section id="dashboard" class="dashboard">
         <div class="container">
-            <h1>TrackOn</h1>
-            <div class="tagline">AI-Powered Real-Time Public Transport for Small Cities</div>
-            <div class="ps-id">Smart India Hackathon 2025 | PS ID: 25013</div>
-            <p>Where current systems fail, TrackOn delivers certainty</p>
-            <a href="#tracking" class="btn">Live Tracking Demo</a>
-            <a href="#features" class="btn btn-secondary">View Features</a>
-        </div>
-    </section>
-
-    <!-- Tracking Dashboard -->
-    <section id="tracking" class="dashboard">
-        <div class="container">
-            <h2>Live Bus Tracking</h2>
-            
             <div class="search-section">
-                <h3>Plan Your Journey</h3>
+                <h2>Track Your Bus</h2>
                 <div class="search-box">
-                    <input type="text" id="start-location" placeholder="Enter starting point (e.g., City Center)">
-                    <input type="text" id="end-location" placeholder="Enter destination (e.g., Railway Station)">
+                    <input type="text" id="start-location" placeholder="Enter starting point">
+                    <input type="text" id="end-location" placeholder="Enter destination">
                     <button class="btn" id="find-route">Find Route</button>
                 </div>
-                <p>Select from popular routes: 
-                    <span style="color: var(--primary); cursor: pointer;" onclick="selectRoute(1)">Route 101</span> | 
-                    <span style="color: var(--primary); cursor: pointer;" onclick="selectRoute(2)">Route 102</span> | 
-                    <span style="color: var(--primary); cursor: pointer;" onclick="selectRoute(3)">Route 103</span>
-                </p>
+                <div class="route-options">
+                    <div class="route-option active" data-route="1">Route 101: City Center - Suburban Area</div>
+                    <div class="route-option" data-route="2">Route 102: Railway Station - Bus Stand</div>
+                    <div class="route-option" data-route="3">Route 103: Market - Residential Zone</div>
+                    <div class="route-option" data-route="4">Route 104: Hospital - College</div>
+                </div>
             </div>
             
-            <div class="map-container">
-                <div id="map"></div>
-            </div>
-            
-            <div style="text-align: center;">
-                <h3>Key Features Demonstrated</h3>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-map-marker-alt"></i>
-                        </div>
-                        <h4>Real-Time Tracking</h4>
-                        <p>Live bus locations with 10-second updates</p>
+            <div class="main-content">
+                <div class="map-container">
+                    <div id="map"></div>
+                    <div class="map-controls">
+                        <button class="btn btn-small" id="locate-me">
+                            <i class="fas fa-location-arrow"></i> Locate Me
+                        </button>
                     </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-robot"></i>
+                </div>
+                
+                <div class="sidebar">
+                    <div class="info-card">
+                        <h3>Selected Route</h3>
+                        <div id="selected-route">
+                            <p><strong>Route 101:</strong> City Center → Suburban Area</p>
+                            <p>Estimated Travel Time: <span class="eta">25 mins</span></p>
+                            <p>Next Bus Arrival: <span class="eta">8 mins</span></p>
                         </div>
-                        <h4>AI Predictions</h4>
-                        <p>Accurate ETA using traffic and historical data</p>
                     </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-users"></i>
+                    
+                    <div class="info-card bus-list">
+                        <h3>Buses on Route</h3>
+                        <div class="bus-item">
+                            <div class="bus-info">
+                                <div class="bus-icon">A1</div>
+                                <div>
+                                    <div>Bus A1</div>
+                                    <div>
+                                        <span class="crowd-indicator crowd-medium"></span>
+                                        Medium Crowd
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="eta">8 mins</div>
                         </div>
-                        <h4>Crowd Density</h4>
-                        <p>Know how crowded your bus is before boarding</p>
+                        <div class="bus-item">
+                            <div class="bus-info">
+                                <div class="bus-icon">B2</div>
+                                <div>
+                                    <div>Bus B2</div>
+                                    <div>
+                                        <span class="crowd-indicator crowd-low"></span>
+                                        Low Crowd
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="eta">15 mins</div>
+                        </div>
+                        <div class="bus-item">
+                            <div class="bus-info">
+                                <div class="bus-icon">C3</div>
+                                <div>
+                                    <div>Bus C3</div>
+                                    <div>
+                                        <span class="crowd-indicator crowd-high"></span>
+                                        High Crowd
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="eta">22 mins</div>
+                        </div>
                     </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-sms"></i>
+                    
+                    <div class="notification-panel">
+                        <h3>Notifications</h3>
+                        <div class="notification-item">
+                            <div class="notification-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div>
+                                <div>Bus A1 is 5 mins away</div>
+                                <small>2 minutes ago</small>
+                            </div>
                         </div>
-                        <h4>SMS Alerts</h4>
-                        <p>Notifications for non-smartphone users</p>
+                        <div class="notification-item">
+                            <div class="notification-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div>
+                                <div>Traffic alert on Route 101</div>
+                                <small>10 minutes ago</small>
+                            </div>
+                        </div>
+                        <div class="sms-toggle">
+                            <label for="sms-notifications">SMS Notifications:</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="sms-notifications" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -404,37 +735,37 @@
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="dashboard" style="background: #f8fafc;">
+    <section id="features" class="features">
         <div class="container">
-            <h2>Why TrackOn is Different</h2>
+            <h2>Why Choose TrackOn?</h2>
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-mobile-alt"></i>
+                        <i class="fas fa-robot"></i>
                     </div>
-                    <h4>Offline-First Design</h4>
-                    <p>Works in areas with poor internet connectivity</p>
+                    <h3>AI-Powered Predictions</h3>
+                    <p>Accurate arrival times using artificial intelligence and real-time data analysis</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-rupee-sign"></i>
+                        <i class="fas fa-users"></i>
                     </div>
-                    <h4>Cost Effective</h4>
-                    <p>IoT device cost under ₹1500 per bus</p>
+                    <h3>Crowd Density Alerts</h3>
+                    <p>Know how crowded the bus is before you board with our smart sensors</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-brain"></i>
+                        <i class="fas fa-sms"></i>
                     </div>
-                    <h4>AI Powered</h4>
-                    <p>Machine learning for accurate predictions</p>
+                    <h3>SMS Notifications</h3>
+                    <p>Get updates via SMS - no smartphone required for essential information</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-expand-arrows-alt"></i>
+                        <i class="fas fa-wifi"></i>
                     </div>
-                    <h4>Scalable</h4>
-                    <p>Designed for pan-India implementation</p>
+                    <h3>Offline-First Design</h3>
+                    <p>Works even with poor internet connectivity in tier 2/3 cities</p>
                 </div>
             </div>
         </div>
@@ -446,112 +777,279 @@
             <div class="footer-content">
                 <div class="footer-column">
                     <h3>TrackOn</h3>
-                    <p>AI-Powered Real-Time Public Transport Solution for Tier 2/3 Cities in India</p>
+                    <p>AI-Powered Real-Time Public Transport Solution for Tier 2/3 Cities in India. Making public transport reliable and accessible for everyone.</p>
                 </div>
                 <div class="footer-column">
-                    <h3>Project Details</h3>
-                    <p>Smart India Hackathon 2025</p>
-                    <p>Problem Statement ID: 25013</p>
-                    <p>Theme: Transportation & Logistics</p>
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#dashboard">Live Tracking</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
                 </div>
                 <div class="footer-column">
-                    <h3>Technology</h3>
-                    <p>HTML5, CSS3, JavaScript</p>
-                    <p>Leaflet.js, OpenStreetMap</p>
-                    <p>GitHub Pages Hosting</p>
+                    <h3>Contact Info</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-envelope"></i> info@trackon.com</li>
+                        <li><i class="fas fa-phone"></i> +91 98765 43210</li>
+                        <li><i class="fas fa-map-marker-alt"></i> For Tier 2/3 Cities Across India</li>
+                    </ul>
                 </div>
-            </div>
-            <div class="sih-footer">
-                <p>Official Submission for Smart India Hackathon 2025</p>
             </div>
             <div class="copyright">
-                <p>&copy; 2025 TrackOn. This project is developed for Smart India Hackathon 2025.</p>
+                <p>&copy; 2025 TrackOn. All rights reserved. | Smart India Hackathon 2025 Project</p>
             </div>
         </div>
     </footer>
 
+    <!-- Route Selection Modal -->
+    <div class="modal" id="route-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Select Your Route</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="route-list">
+                <div class="route-item active">
+                    <div class="route-details">
+                        <div>
+                            <span class="route-number">Route 101</span>
+                            <div>City Center → Suburban Area</div>
+                        </div>
+                        <div class="route-time">25 mins</div>
+                    </div>
+                </div>
+                <div class="route-item">
+                    <div class="route-details">
+                        <div>
+                            <span class="route-number">Route 102</span>
+                            <div>Railway Station → Bus Stand</div>
+                        </div>
+                        <div class="route-time">18 mins</div>
+                    </div>
+                </div>
+                <div class="route-item">
+                    <div class="route-details">
+                        <div>
+                            <span class="route-number">Route 103</span>
+                            <div>Market → Residential Zone</div>
+                        </div>
+                        <div class="route-time">32 mins</div>
+                    </div>
+                </div>
+                <div class="route-item">
+                    <div class="route-details">
+                        <div>
+                            <span class="route-number">Route 104</span>
+                            <div>Hospital → College</div>
+                        </div>
+                        <div class="route-time">22 mins</div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn" id="confirm-route">Confirm Route</button>
+        </div>
+    </div>
+
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
         // Initialize the map
-        var map = L.map('map').setView([20.5937, 78.9629], 5);
+        var map = L.map('map').setView([20.5937, 78.9629], 5); // Center on India
         
         // Add OpenStreetMap tiles
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
         
-        // Sample data for demonstration
-        function selectRoute(routeNum) {
-            // Clear existing markers
-            map.eachLayer(function(layer) {
-                if (layer instanceof L.Marker) {
-                    map.removeLayer(layer);
-                }
-            });
+        // Sample bus routes data for tier 2/3 cities
+        const routes = {
+            1: {
+                name: "Route 101: City Center - Suburban Area",
+                stops: [
+                    {name: "City Center", lat: 28.6139, lng: 77.2090},
+                    {name: "Main Market", lat: 28.6200, lng: 77.2150},
+                    {name: "Hospital", lat: 28.6300, lng: 77.2250},
+                    {name: "Residential Area", lat: 28.6400, lng: 77.2350},
+                    {name: "Suburban Area", lat: 28.6500, lng: 77.2450}
+                ],
+                buses: [
+                    {id: "A1", lat: 28.6180, lng: 77.2120, crowd: "medium", eta: 8},
+                    {id: "B2", lat: 28.6250, lng: 77.2200, crowd: "low", eta: 15},
+                    {id: "C3", lat: 28.6350, lng: 77.2300, crowd: "high", eta: 22}
+                ]
+            },
+            2: {
+                name: "Route 102: Railway Station - Bus Stand",
+                stops: [
+                    {name: "Railway Station", lat: 28.6600, lng: 77.2300},
+                    {name: "Commercial Area", lat: 28.6550, lng: 77.2200},
+                    {name: "Shopping Complex", lat: 28.6500, lng: 77.2100},
+                    {name: "Bus Stand", lat: 28.6450, lng: 77.2000}
+                ],
+                buses: [
+                    {id: "D4", lat: 28.6580, lng: 77.2250, crowd: "low", eta: 5},
+                    {id: "E5", lat: 28.6520, lng: 77.2150, crowd: "medium", eta: 12}
+                ]
+            }
+        };
+        
+        let currentRoute = 1;
+        let routePolyline = null;
+        let busMarkers = [];
+        let stopMarkers = [];
+        
+        // Function to display a route on the map
+        function displayRoute(routeId) {
+            // Clear previous route and markers
+            if (routePolyline) {
+                map.removeLayer(routePolyline);
+            }
             
-            // Sample routes data
-            const routes = {
-                1: {
-                    name: "Route 101: City Center - Suburban Area",
-                    stops: [
-                        {name: "City Center", lat: 28.6139, lng: 77.2090},
-                        {name: "Main Market", lat: 28.6200, lng: 77.2150},
-                        {name: "Hospital", lat: 28.6300, lng: 77.2250},
-                        {name: "Suburban Area", lat: 28.6500, lng: 77.2450}
-                    ]
-                },
-                2: {
-                    name: "Route 102: Railway Station - Bus Stand",
-                    stops: [
-                        {name: "Railway Station", lat: 28.6600, lng: 77.2300},
-                        {name: "Commercial Area", lat: 28.6550, lng: 77.2200},
-                        {name: "Bus Stand", lat: 28.6450, lng: 77.2000}
-                    ]
-                },
-                3: {
-                    name: "Route 103: Market - Residential Zone",
-                    stops: [
-                        {name: "Main Market", lat: 28.6200, lng: 77.2150},
-                        {name: "School", lat: 28.6250, lng: 77.2050},
-                        {name: "Residential Zone", lat: 28.6350, lng: 77.1950}
-                    ]
-                }
-            };
+            busMarkers.forEach(marker => map.removeLayer(marker));
+            busMarkers = [];
             
-            const route = routes[routeNum];
+            stopMarkers.forEach(marker => map.removeLayer(marker));
+            stopMarkers = [];
+            
+            // Get the selected route
+            const route = routes[routeId];
+            currentRoute = routeId;
+            
+            // Update the selected route info
+            document.getElementById('selected-route').innerHTML = `
+                <p><strong>${route.name}</strong></p>
+                <p>Estimated Travel Time: <span class="eta">${route.stops.length * 5} mins</span></p>
+                <p>Next Bus Arrival: <span class="eta">${route.buses[0].eta} mins</span></p>
+            `;
+            
+            // Create polyline for the route
+            const routeCoords = route.stops.map(stop => [stop.lat, stop.lng]);
+            routePolyline = L.polyline(routeCoords, {color: 'blue', weight: 5}).addTo(map);
+            
+            // Fit map to show the entire route
+            map.fitBounds(routePolyline.getBounds());
             
             // Add markers for stops
             route.stops.forEach((stop, index) => {
-                L.marker([stop.lat, stop.lng])
-                    .bindPopup(`<b>${stop.name}</b><br>Stop ${index+1} on ${route.name}`)
+                const marker = L.marker([stop.lat, stop.lng])
+                    .bindPopup(`<b>Stop ${index+1}:</b> ${stop.name}`)
                     .addTo(map);
+                stopMarkers.push(marker);
             });
             
-            // Fit map to show all stops
-            const group = new L.featureGroup(route.stops.map(stop => L.marker([stop.lat, stop.lng])));
-            map.fitBounds(group.getBounds().pad(0.1));
+            // Add markers for buses
+            route.buses.forEach(bus => {
+                const busIcon = L.divIcon({
+                    html: `<div class="bus-icon">${bus.id}</div>`,
+                    iconSize: [30, 30],
+                    className: 'bus-marker'
+                });
+                
+                const marker = L.marker([bus.lat, bus.lng], {icon: busIcon})
+                    .bindPopup(`
+                        <b>Bus ${bus.id}</b><br>
+                        Crowd: ${bus.crowd}<br>
+                        ETA: ${bus.eta} mins
+                    `)
+                    .addTo(map);
+                busMarkers.push(marker);
+            });
             
-            // Update search fields
-            document.getElementById('start-location').value = route.stops[0].name;
-            document.getElementById('end-location').value = route.stops[route.stops.length-1].name;
-            
-            alert(`Showing ${route.name}. In a full implementation, this would show live bus locations and ETAs.`);
+            // Update the active route option
+            document.querySelectorAll('.route-option').forEach(option => {
+                option.classList.remove('active');
+                if (option.dataset.route == routeId) {
+                    option.classList.add('active');
+                }
+            });
         }
         
-        // Find route button handler
+        // Initialize with the first route
+        displayRoute(1);
+        
+        // Route selection functionality
+        document.querySelectorAll('.route-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const routeId = this.dataset.route;
+                displayRoute(routeId);
+            });
+        });
+        
+        // Find route button
         document.getElementById('find-route').addEventListener('click', function() {
             const start = document.getElementById('start-location').value;
             const end = document.getElementById('end-location').value;
             
             if (start && end) {
-                alert(`Finding best route from ${start} to ${end}. In a full implementation, this would calculate the optimal route and show bus options.`);
+                // In a real app, this would call a routing API
+                // For demo, we'll just show a success message and route 1
+                alert(`Finding best route from ${start} to ${end}...`);
+                displayRoute(1);
             } else {
                 alert('Please enter both starting point and destination');
             }
         });
         
-        // Initialize with a sample route
-        selectRoute(1);
+        // Locate me button
+        document.getElementById('locate-me').addEventListener('click', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    L.marker([lat, lng])
+                        .bindPopup('Your Location')
+                        .addTo(map);
+                    
+                    map.setView([lat, lng], 13);
+                }, function() {
+                    alert('Unable to get your location. Please enable location services.');
+                });
+            } else {
+                alert('Geolocation is not supported by your browser');
+            }
+        });
+        
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu').addEventListener('click', function() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+        
+        // SMS notifications toggle
+        document.getElementById('sms-notifications').addEventListener('change', function() {
+            if (this.checked) {
+                alert('SMS notifications enabled. You will receive updates via SMS.');
+            } else {
+                alert('SMS notifications disabled.');
+            }
+        });
+        
+        // Simulate bus movement (for demo purposes)
+        setInterval(function() {
+            if (routes[currentRoute] && routes[currentRoute].buses.length > 0) {
+                routes[currentRoute].buses.forEach((bus, index) => {
+                    // Move bus slightly along the route
+                    const routeStops = routes[currentRoute].stops;
+                    const progress = (Date.now() / 60000 + index * 5) % routeStops.length;
+                    const currentStopIndex = Math.floor(progress);
+                    const nextStopIndex = (currentStopIndex + 1) % routeStops.length;
+                    const ratio = progress - currentStopIndex;
+                    
+                    const currentStop = routeStops[currentStopIndex];
+                    const nextStop = routeStops[nextStopIndex];
+                    
+                    bus.lat = currentStop.lat + (nextStop.lat - currentStop.lat) * ratio;
+                    bus.lng = currentStop.lng + (nextStop.lng - currentStop.lng) * ratio;
+                    
+                    // Update ETA (simplified calculation)
+                    bus.eta = Math.max(1, Math.round((1 - ratio) * 10));
+                });
+                
+                // Refresh the display
+                displayRoute(currentRoute);
+            }
+        }, 5000); // Update every 5 seconds
     </script>
 </body>
 </html>
