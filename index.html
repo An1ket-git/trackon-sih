@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrackOn - AI-Powered Bus Tracking for Tier 2/3 Cities | SIH 2025</title>
+    <meta name="description" content="AI-powered real-time bus tracking system for small cities. SIH 2025 Project - PS ID: 25013">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --crowd-low: #10b981;
+            --crowd-medium: #f59e0b;
+            --crowd-high: #ef4444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        section {
+            padding: 60px 0;
+        }
+        
+        h1, h2, h3, h4 {
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+        
+        h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        p {
+            margin-bottom: 1rem;
+            color: var(--gray);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary);
+        }
+        
+        .btn-secondary:hover {
+            background: #0da271;
+        }
+        
+        /* Header Styles */
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+        }
+        
+        .sih-badge {
+            background: #ff9933;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 20px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero .tagline {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: #e2e8f0;
+        }
+        
+        .ps-id {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+        
+        /* Dashboard Section */
+        .dashboard {
+            background: white;
+            padding: 60px 0;
+        }
+        
+        .search-section {
+            background: #f8fafc;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .search-box input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .map-container {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .feature-card {
+            text-align: center;
+            padding: 30px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 1.8rem;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 40px 0 20px;
+            text-align: center;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+        
+        .footer-column {
+            flex: 1;
+            min-width: 250px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-column h3 {
+            margin-bottom: 20px;
+        }
+        
+        .copyright {
+            border-top: 1px solid #334155;
+            padding-top: 20px;
+            color: #94a3b8;
+        }
+        
+        .sih-footer {
+            background: #ff9933;
+            color: white;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <i class="fas fa-bus"></i>
+                    TrackOn <span class="sih-badge">SIH 2025</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#tracking">Live Tracking</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>TrackOn</h1>
+            <div class="tagline">AI-Powered Real-Time Public Transport for Small Cities</div>
+            <div class="ps-id">Smart India Hackathon 2025 | PS ID: 25013</div>
+            <p>Where current systems fail, TrackOn delivers certainty</p>
+            <a href="#tracking" class="btn">Live Tracking Demo</a>
+            <a href="#features" class="btn btn-secondary">View Features</a>
+        </div>
+    </section>
+
+    <!-- Tracking Dashboard -->
+    <section id="tracking" class="dashboard">
+        <div class="container">
+            <h2>Live Bus Tracking</h2>
+            
+            <div class="search-section">
+                <h3>Plan Your Journey</h3>
+                <div class="search-box">
+                    <input type="text" id="start-location" placeholder="Enter starting point (e.g., City Center)">
+                    <input type="text" id="end-location" placeholder="Enter destination (e.g., Railway Station)">
+                    <button class="btn" id="find-route">Find Route</button>
+                </div>
+                <p>Select from popular routes: 
+                    <span style="color: var(--primary); cursor: pointer;" onclick="selectRoute(1)">Route 101</span> | 
+                    <span style="color: var(--primary); cursor: pointer;" onclick="selectRoute(2)">Route 102</span> | 
+                    <span style="color: var(--primary); cursor: pointer;" onclick="selectRoute(3)">Route 103</span>
+                </p>
+            </div>
+            
+            <div class="map-container">
+                <div id="map"></div>
+            </div>
+            
+            <div style="text-align: center;">
+                <h3>Key Features Demonstrated</h3>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h4>Real-Time Tracking</h4>
+                        <p>Live bus locations with 10-second updates</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h4>AI Predictions</h4>
+                        <p>Accurate ETA using traffic and historical data</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h4>Crowd Density</h4>
+                        <p>Know how crowded your bus is before boarding</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-sms"></i>
+                        </div>
+                        <h4>SMS Alerts</h4>
+                        <p>Notifications for non-smartphone users</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="dashboard" style="background: #f8fafc;">
+        <div class="container">
+            <h2>Why TrackOn is Different</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h4>Offline-First Design</h4>
+                    <p>Works in areas with poor internet connectivity</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-rupee-sign"></i>
+                    </div>
+                    <h4>Cost Effective</h4>
+                    <p>IoT device cost under ₹1500 per bus</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h4>AI Powered</h4>
+                    <p>Machine learning for accurate predictions</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </div>
+                    <h4>Scalable</h4>
+                    <p>Designed for pan-India implementation</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>TrackOn</h3>
+                    <p>AI-Powered Real-Time Public Transport Solution for Tier 2/3 Cities in India</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Project Details</h3>
+                    <p>Smart India Hackathon 2025</p>
+                    <p>Problem Statement ID: 25013</p>
+                    <p>Theme: Transportation & Logistics</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Technology</h3>
+                    <p>HTML5, CSS3, JavaScript</p>
+                    <p>Leaflet.js, OpenStreetMap</p>
+                    <p>GitHub Pages Hosting</p>
+                </div>
+            </div>
+            <div class="sih-footer">
+                <p>Official Submission for Smart India Hackathon 2025</p>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 TrackOn. This project is developed for Smart India Hackathon 2025.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Initialize the map
+        var map = L.map('map').setView([20.5937, 78.9629], 5);
+        
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Sample data for demonstration
+        function selectRoute(routeNum) {
+            // Clear existing markers
+            map.eachLayer(function(layer) {
+                if (layer instanceof L.Marker) {
+                    map.removeLayer(layer);
+                }
+            });
+            
+            // Sample routes data
+            const routes = {
+                1: {
+                    name: "Route 101: City Center - Suburban Area",
+                    stops: [
+                        {name: "City Center", lat: 28.6139, lng: 77.2090},
+                        {name: "Main Market", lat: 28.6200, lng: 77.2150},
+                        {name: "Hospital", lat: 28.6300, lng: 77.2250},
+                        {name: "Suburban Area", lat: 28.6500, lng: 77.2450}
+                    ]
+                },
+                2: {
+                    name: "Route 102: Railway Station - Bus Stand",
+                    stops: [
+                        {name: "Railway Station", lat: 28.6600, lng: 77.2300},
+                        {name: "Commercial Area", lat: 28.6550, lng: 77.2200},
+                        {name: "Bus Stand", lat: 28.6450, lng: 77.2000}
+                    ]
+                },
+                3: {
+                    name: "Route 103: Market - Residential Zone",
+                    stops: [
+                        {name: "Main Market", lat: 28.6200, lng: 77.2150},
+                        {name: "School", lat: 28.6250, lng: 77.2050},
+                        {name: "Residential Zone", lat: 28.6350, lng: 77.1950}
+                    ]
+                }
+            };
+            
+            const route = routes[routeNum];
+            
+            // Add markers for stops
+            route.stops.forEach((stop, index) => {
+                L.marker([stop.lat, stop.lng])
+                    .bindPopup(`<b>${stop.name}</b><br>Stop ${index+1} on ${route.name}`)
+                    .addTo(map);
+            });
+            
+            // Fit map to show all stops
+            const group = new L.featureGroup(route.stops.map(stop => L.marker([stop.lat, stop.lng])));
+            map.fitBounds(group.getBounds().pad(0.1));
+            
+            // Update search fields
+            document.getElementById('start-location').value = route.stops[0].name;
+            document.getElementById('end-location').value = route.stops[route.stops.length-1].name;
+            
+            alert(`Showing ${route.name}. In a full implementation, this would show live bus locations and ETAs.`);
+        }
+        
+        // Find route button handler
+        document.getElementById('find-route').addEventListener('click', function() {
+            const start = document.getElementById('start-location').value;
+            const end = document.getElementById('end-location').value;
+            
+            if (start && end) {
+                alert(`Finding best route from ${start} to ${end}. In a full implementation, this would calculate the optimal route and show bus options.`);
+            } else {
+                alert('Please enter both starting point and destination');
+            }
+        });
+        
+        // Initialize with a sample route
+        selectRoute(1);
+    </script>
+</body>
+</html>
