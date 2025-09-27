@@ -3,7 +3,7 @@
 ## Smart India Hackathon 2025 | Problem Statement ID: 25013
 
 ### Live Demo
-**Website URL:** https://yourusername.github.io/trackon-sih
+**Website URL:** https://an1ket-git.github.io/trackon-sih/
 
 ### Problem Statement
 60% of commuters in tier 2/3 Indian cities face unpredictable bus schedules and digital exclusion. Existing solutions fail non-smartphone users and lack accurate predictions.
@@ -30,7 +30,7 @@ TrackOn provides:
 5. SIH-specific branding and documentation
 
 ### Team Information
-[Your Team Name] - [Your College Name]
+TEAM INFINITY - NIT PATNA
 
 ### Project Documentation
 - Full technical specification available upon request
